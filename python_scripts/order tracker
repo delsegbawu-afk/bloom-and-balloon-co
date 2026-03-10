@@ -1,0 +1,163 @@
+“””
+order_tracker.py
+Bloom & Balloon Co. — Order Management Tool
+“””
+
+import csv
+import os
+from datetime import date
+
+CSV_FILE = “orders.csv”
+HEADERS = [“Order #”, “Customer”, “Event Type”, “Date”, “Quantity”, “Unit Price (₱)”, “Total (₱)”]
+
+def initialize_csv():
+“”“Create the CSV file with headers if it doesn’t exist.”””
+if not os.path.exists(CSV_FILE):
+with open(CSV_FILE, “w”, newline=””) as f:
+writer = csv.writer(f)
+writer.writerow(HEADERS)
+
+def get_next_order_number():
+“”“Get the next available order number.”””
+orders = load_orders()
+return len(orders) + 1
+
+def add_order(customer, event_type, quantity, unit_price, event_date=None):
+“”“Add a new order to the CSV file.”””
+order_num = get_next_order_number()
+order_date = event_date or str(date.today())
+total = quantity * unit_price
+
+```
+with open(CSV_FILE, "a", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow([order_num, customer, event_type, order_date, quantity, unit_price, total])
+
+print(f"\n✅ Order #{order_num} added for {customer}! Total: ₱{total:.2f}")
+return order_num
+```
+
+def load_orders():
+“”“Load all orders from the CSV file.”””
+orders = []
+if not os.path.exists(CSV_FILE):
+return orders
+with open(CSV_FILE, “r”) as f:
+reader = csv.DictReader(f)
+for row in reader:
+orders.append(row)
+return orders
+
+def view_orders():
+“”“Display all orders in a formatted table.”””
+orders = load_orders()
+
+```
+print("\n" + "=" * 68)
+print("        🌸 Bloom & Balloon Co. — Order Summary 🌸")
+print("=" * 68)
+
+if not orders:
+    print("  No orders yet. Add your first one!")
+    print("=" * 68)
+    return
+
+print(f"{'#':<4} {'Customer':<18} {'Event':<14} {'Date':<12} {'Qty':<5} {'Unit ₱':<9} {'Total ₱'}")
+print("-" * 68)
+
+total_revenue = 0.0
+for order in orders:
+    num = order["Order #"]
+    customer = order["Customer"][:17]
+    event = order["Event Type"][:13]
+    date_val = order["Date"]
+    qty = order["Quantity"]
+    unit = float(order["Unit Price (₱)"])
+    total = float(order["Total (₱)"])
+    total_revenue += total
+
+    print(f"{num:<4} {customer:<18} {event:<14} {date_val:<12} {qty:<5} {unit:<9.2f} {total:.2f}")
+
+print("-" * 68)
+print(f"  Total Orders: {len(orders)}")
+print(f"  Total Revenue: ₱{total_revenue:,.2f}")
+print("=" * 68)
+```
+
+def calculate_revenue():
+“”“Return total revenue from all orders.”””
+orders = load_orders()
+return sum(float(order[“Total (₱)”]) for order in orders)
+
+def revenue_by_event():
+“”“Show revenue broken down by event type.”””
+orders = load_orders()
+breakdown = {}
+for order in orders:
+event = order[“Event Type”]
+breakdown[event] = breakdown.get(event, 0) + float(order[“Total (₱)”])
+
+```
+print("\n📊 Revenue by Event Type:")
+print("-" * 32)
+for event, total in sorted(breakdown.items(), key=lambda x: x[1], reverse=True):
+    print(f"  {event:<20} ₱{total:,.2f}")
+print("-" * 32)
+print(f"  {'TOTAL':<20} ₱{sum(breakdown.values()):,.2f}\n")
+```
+
+def interactive_menu():
+“”“Run an interactive menu for managing orders.”””
+initialize_csv()
+print(”\n🎈 Welcome to Bloom & Balloon Co. Order Tracker!”)
+
+```
+while True:
+    print("\nWhat would you like to do?")
+    print("  1. Add a new order")
+    print("  2. View all orders")
+    print("  3. Revenue by event type")
+    print("  4. Exit")
+
+    choice = input("\nEnter choice (1–4): ").strip()
+
+    if choice == "1":
+        print("\n--- New Order ---")
+        customer = input("Customer name: ").strip()
+        event = input("Event type (e.g., Birthday, Graduation, School Fair): ").strip()
+        qty = int(input("Quantity (number of arrangements): ").strip())
+        price = float(input("Unit price (₱): ").strip())
+        add_order(customer, event, qty, price)
+
+    elif choice == "2":
+        view_orders()
+
+    elif choice == "3":
+        revenue_by_event()
+
+    elif choice == "4":
+        print("\n🌸 Thanks for using Bloom & Balloon Co. Tracker. Goodbye!\n")
+        break
+
+    else:
+        print("⚠️  Invalid choice. Please enter 1, 2, 3, or 4.")
+```
+
+# — Sample Demo (runs if script is executed directly) —
+
+if **name** == “**main**”:
+initialize_csv()
+
+```
+# Add sample orders for demo purposes
+if get_next_order_number() == 1:
+    print("Loading sample orders for demo...")
+    add_order("Jane Doe",     "Birthday",    2, 15.00, "2025-03-01")
+    add_order("Maria Santos", "Graduation",  5, 20.00, "2025-03-05")
+    add_order("Alex Kim",     "School Fair", 3, 12.00, "2025-03-08")
+    add_order("Sam Reyes",    "Birthday",    4, 15.00, "2025-03-10")
+    add_order("Lily Cruz",    "Debut",      10, 25.00, "2025-03-15")
+
+view_orders()
+revenue_by_event()
+```
